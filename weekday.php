@@ -78,13 +78,14 @@ function printAusgabe($year, $month, $day, $weekDay): void
  */
 function printDebugOutput(int $m, $y, $c): void
 {
+    global $argc;
+    global $argv;
+
     if ($argc > 4 && ($argv[4] == '-d' || $argv[4] == '--debug')) {
         echo "DEBUG: m={$m} y={$y} c={$c}\n";
     }
 }
 
-
 printEingabe($day, $month, $year);
 printAusgabe($year, $month, $day, $weekDay);
 printDebugOutput($m, $y, $c);
-
