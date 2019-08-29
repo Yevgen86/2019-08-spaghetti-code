@@ -79,35 +79,41 @@ function handleCommandLine(int $argc, array $argv): array
     return [$day, $month, $year];
 }
 
+/**
+ * @param $month
+ * @param $year
+ * @param $day
+ * @return array
+ */
+function calculateWeekDayNumber($month, $year, $day): array
+{
+    $julianMonth = (($month - 2 - 1) + 12) % 12 + 1; // this is because of the modulo
+
+    if ($julianMonth >= 11) {
+        $c = substr($year - 1, 0, 2);
+        $y = substr($year - 1, 2, 2);
+    } else {
+        $c = substr($year, 0, 2);
+        $y = substr($year, 2, 2);
+    }
+
+    $w = ($day + intval(2.6 * $julianMonth - 0.2) + $y + intval($y / 4) + intval($c / 4) - 2 * $c) % 7;
+    return array($julianMonth, $c, $y, $w);
+}
+
 function main(int $argc, array $argv): void
 {
     setlocale(LC_TIME, 'de_AT.utf-8');
 
     list($day, $month, $year) = handleCommandLine($argc, $argv);
 
-    $m = (($month - 2 - 1) + 12) % 12 + 1; // this is because of the modulo
-    $c = substr($year, 0, 2);
-
-    // TODO: repair the double if $m checked twice
-    if ($m >= 11)
-    {
-        $c = substr($year - 1, 0, 2);
-    }
-
-    $y = substr($year, 2, 2);
-
-    if ($m >= 11)
-    {
-        $y = substr($year - 1, 2, 2);
-    }
-
-    $w = ($day + intval(2.6 * $m - 0.2) + $y + intval($y / 4) + intval($c / 4) - 2 * $c) % 7;
+    list($julianMonth, $c, $y, $w) = calculateWeekDayNumber($month, $year, $day);
 
     $weekDay = getWeekDayName($w);
 
     printEingabe($day, $month, $year);
     printAusgabe($year, $month, $day, $weekDay);
-    printDebugOutput($m, $y, $c);
+    printDebugOutput($julianMonth, $y, $c);
 }
 
 main($argc, $argv);
